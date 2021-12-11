@@ -2,7 +2,8 @@ __all__ = [
     "DEBUG",
     "flatten",
     "debug_print",
-    "get_day"
+    "get_day",
+    "debug_print_grid",
 ]
 
 import os
@@ -33,3 +34,10 @@ def get_day(day: int, practice: str = "", year: int = 2021) -> str:
             cache_file.write(response.text.strip())
     with open(filename) as cache_file:
         return cache_file.read().strip()
+
+
+def debug_print_grid(grid):
+    if DEBUG:
+        for line in grid:
+            print(*line)
+        print()
