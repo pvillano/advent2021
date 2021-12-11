@@ -21,7 +21,9 @@ def debug_print(*args, **kwargs):
         return print(*args, **kwargs)
 
 
-def get_day(day: int, year: int = 2021) -> str:
+def get_day(day: int, practice: str = "", year: int = 2021) -> str:
+    if DEBUG:
+        return practice.strip()
     filename = f"input{day:02d}.txt"
     if not os.path.exists(filename):
         with open(".token", "r") as token_file:
