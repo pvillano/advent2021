@@ -15,5 +15,5 @@ def part2():
     pass
 
 
-part1()
-part2()
+print(part1())
+print(part2())
