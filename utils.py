@@ -1,9 +1,9 @@
 __all__ = [
     "DEBUG",
-    "flatten",
     "debug_print",
-    "get_day",
     "debug_print_grid",
+    "flatten",
+    "get_day",
     "pipe",
 ]
 
@@ -20,7 +20,7 @@ flatten = chain.from_iterable
 
 def debug_print(*args, **kwargs):
     if DEBUG:
-        return print(*args, **kwargs)
+        return print(*args, **kwargs, file=sys.stderr, flush=True)
 
 
 def get_day(day: int, practice: str = "", year: int = 2021) -> str:
