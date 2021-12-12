@@ -1,8 +1,7 @@
-from utils import debug_print, debug_print_grid, flatten, get_day, pipe
-from math import sqrt
-from itertools import accumulate, count, product
-from collections import defaultdict, deque
 import time
+from collections import defaultdict
+
+from utils import debug_print, get_day
 
 test = """start-A
 start-b
@@ -16,17 +15,14 @@ lines = get_day(12, test).split("\n")
 
 
 def part1():
-    adjacency = defaultdict(set)
+    adjacency = defaultdict(list)
     for line in lines:
         l, r = line.split("-")
-        adjacency[l].add(r)
-        adjacency[r].add(l)
+        adjacency[l].append(r)
+        adjacency[r].append(l)
     adjacency = {k: tuple(sorted(v)) for k, v in adjacency.items()}
 
-    def big(c):
-        return "A" <= c[0] <= "Z"
-
-    def rec(node, seen_stack=None):
+    def recurse(node, seen_stack=None):
         if node == "end":
             debug_print(*seen_stack, "end")
             return 1
@@ -35,14 +31,11 @@ def part1():
         tot = 0
         next_stack = seen_stack + [node]
         for nxt in adjacency[node]:
-            # if seen_stack and nxt == seen_stack[-1]:
-            #     continue
-            if (not big(nxt)) and nxt in seen_stack:
-                continue
-            tot += rec(nxt, next_stack)
+            if nxt.isupper() or nxt not in seen_stack:
+                tot += recurse(nxt, next_stack)
         return tot
 
-    return rec("start")
+    return recurse("start")
 
 
 def part2():
@@ -53,11 +46,9 @@ def part2():
         adjacency[r].add(l)
     adjacency = {k: tuple(sorted(v)) for k, v in adjacency.items()}
 
-    def big(c):
-        return "A" <= c[0] <= "Z"
+    def recurse(node, seen_stack=None, vsc2=False):
+        # :param vsc2: visited small cave twice
 
-    def rec(node, seen_stack=None, vsc2=False):
-        debug_print(seen_stack)
         if node == "end":
             debug_print(*seen_stack, "end")
             return 1
@@ -68,14 +59,14 @@ def part2():
         for nxt in adjacency[node]:
             if nxt == "start":
                 continue
-            if (not big(nxt)) and (nxt in seen_stack):
+            if nxt.islower() and nxt in seen_stack:
                 if not vsc2:
-                    tot += rec(nxt, next_stack, True)
-                continue
-            tot += rec(nxt, next_stack, vsc2)
+                    tot += recurse(nxt, next_stack, True)
+            else:
+                tot += recurse(nxt, next_stack, vsc2)
         return tot
 
-    return rec("start")
+    return recurse("start")
 
 
 #
