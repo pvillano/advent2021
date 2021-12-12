@@ -4,6 +4,7 @@ __all__ = [
     "debug_print",
     "get_day",
     "debug_print_grid",
+    "pipe",
 ]
 
 import os
@@ -41,3 +42,10 @@ def debug_print_grid(grid):
         for line in grid:
             print(*line)
         print()
+
+
+def pipe(first, *args):
+    for func in args:
+        first = func(first)
+    return first
+
