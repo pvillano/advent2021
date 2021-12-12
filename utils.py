@@ -30,7 +30,9 @@ def get_day(day: int, practice: str = "", year: int = 2021) -> str:
     if not os.path.exists(filename):
         with open(".token", "r") as token_file:
             cookies = {"session": token_file.read().strip()}
-        response = requests.get(f"https://adventofcode.com/{year}/day/{day}/input", cookies=cookies)
+        response = requests.get(
+            f"https://adventofcode.com/{year}/day/{day}/input", cookies=cookies
+        )
         with open(filename, "w") as cache_file:
             cache_file.write(response.text.strip())
     with open(filename) as cache_file:
@@ -48,4 +50,3 @@ def pipe(first, *args):
     for func in args:
         first = func(first)
     return first
-

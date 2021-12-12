@@ -4,7 +4,7 @@ from itertools import *
 
 test = """"""
 
-lines = get_day(TODO, test).split('\n')
+lines = get_day(TODO, test).split("\n")
 
 
 def part1():

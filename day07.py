@@ -12,21 +12,12 @@ line = get_day(7, test)
 def part1():
     # to minimize cost, traverse the list until
     # cost of a spot is sum(here-left) + sum (right-here)#
-    data = pipe(
-        map(int, line.split(',')),
-        sorted,
-        tuple
-    )
+    data = pipe(map(int, line.split(",")), sorted, tuple)
     debug_print(data)
     sum_left = tuple(accumulate(data))
     debug_print(sum_left)
     sum_right = pipe(
-        data,
-        reversed,
-        accumulate,  # defaults to sum
-        tuple,
-        reversed,
-        tuple
+        data, reversed, accumulate, tuple, reversed, tuple  # defaults to sum
     )
     debug_print(sum_right)
 
@@ -39,7 +30,7 @@ def part1():
 
 
 def part2():
-    #rip quadratic
+    # rip quadratic
 
     # minimizing y=axx + bx + c
     # cost(x,pos) = (x-pos)*(x-pos+1)/2
@@ -47,17 +38,13 @@ def part2():
     # min at der = 0
     # -b/2a
 
-    data = pipe(
-        map(int, line.split(',')),
-        sorted,
-        tuple
-    )
-    a = len(data)/2
-    b = sum([-2 * pos - 1 for pos in data])/2
-    c = sum([pos * (pos - 1) for pos in data])/2
-    debug_print(a,b,c)
-    x = (-b/2/a)
-    cost = a*x*x + b*x + c
+    data = pipe(map(int, line.split(",")), sorted, tuple)
+    a = len(data) / 2
+    b = sum([-2 * pos - 1 for pos in data]) / 2
+    c = sum([pos * (pos - 1) for pos in data]) / 2
+    debug_print(a, b, c)
+    x = -b / 2 / a
+    cost = a * x * x + b * x + c
     return x, cost
 
 

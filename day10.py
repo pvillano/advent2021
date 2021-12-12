@@ -13,13 +13,13 @@ test = """[({(<(())[]>[[{[]{<()<>>
 <{([([[(<>()){}]>(<<{{
 <{([{{}}[<[[[<>{}]]]>[]]"""
 
-lines = get_day(10, test).split('\n')
+lines = get_day(10, test).split("\n")
 
 scores = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137,
+    ")": 3,
+    "]": 57,
+    "}": 1197,
+    ">": 25137,
 }
 #####################################
 score = 0
@@ -42,6 +42,7 @@ print(score)
 
 ###############################
 
+
 def remaining_chars(line):
     stack = []
     for ch in line:
@@ -60,10 +61,10 @@ def remaining_chars(line):
 
 score = []
 scores = {
-    '(': 1,
-    '[': 2,
-    '{': 3,
-    '<': 4,
+    "(": 1,
+    "[": 2,
+    "{": 3,
+    "<": 4,
 }
 
 for line in lines:
@@ -72,8 +73,8 @@ for line in lines:
     for ch in reversed(chars):
         line_score *= 5
         line_score += scores[ch]
-    debug_print(''.join(chars), line_score)
+    debug_print("".join(chars), line_score)
     if line_score:
         score.append(line_score)
 
-print(sorted(score)[len(score)//2])
+print(sorted(score)[len(score) // 2])

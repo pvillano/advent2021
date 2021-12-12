@@ -13,7 +13,7 @@ test = """2199943210
 8767896789
 9899965678"""
 
-lines = get_day(9, test).split('\n')
+lines = get_day(9, test).split("\n")
 
 board = [list(map(int, line)) for line in lines]
 
@@ -43,7 +43,9 @@ def part2():
     height = len(board)
     width = len(board[0])
 
-    union_find: List[List[Set[Tuple]]] = [[set() for j in range(width)] for i in range(height)]
+    union_find: List[List[Set[Tuple]]] = [
+        [set() for j in range(width)] for i in range(height)
+    ]
 
     for i, j in product(range(height), range(width)):
         if board[i][j] == 9:
@@ -57,7 +59,12 @@ def part2():
                 if board[i][j] > board[ii][jj]:
                     union_find[i][j].add((ii, jj))
         if is_low:
-            union_find[i][j] = {(i, j,)}
+            union_find[i][j] = {
+                (
+                    i,
+                    j,
+                )
+            }
 
     debug_print_grid(union_find)
 

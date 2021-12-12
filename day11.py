@@ -13,7 +13,7 @@ test = """5483143223
 4846848554
 5283751526"""
 
-lines = get_day(11, test).split('\n')
+lines = get_day(11, test).split("\n")
 
 
 board = []

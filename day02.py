@@ -1,10 +1,10 @@
 from utils import *
 
-lines = get_day(2).split('\n')
+lines = get_day(2).split("\n")
 ########################################
 x, z = 0, 0
 for line in lines:
-    command, dist = line.split(' ')
+    command, dist = line.split(" ")
     dist = int(dist)
     if command == "forward":
         x += dist
@@ -16,7 +16,7 @@ print(x * z)
 #########################################
 x, z, aim = 0, 0, 0
 for line in lines:
-    command, dist = line.split(' ')
+    command, dist = line.split(" ")
     dist = int(dist)
     if command == "forward":
         x += dist
