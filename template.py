@@ -1,11 +1,21 @@
-from utils import *
-from math import *
-from itertools import *
-from collections import defaultdict
+from copy import copy
+
+from utils import benchmark, debug_print, get_day, pipe
+from math import sqrt, floor, ceil, gcd, sin, cos, atan2
+from itertools import (
+    accumulate,
+    count,
+    cycle,
+    product,
+    permutations,
+    combinations,
+    pairwise,
+)
+from collections import defaultdict, deque, Counter
 
 test = """"""
 
-lines = get_day(TODO, test).split("\n")
+lines = get_day(14, test).split("\n")
 
 
 def part1():
