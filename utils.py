@@ -1,4 +1,5 @@
 __all__ = [
+    "benchmark",
     "DEBUG",
     "debug_print",
     "debug_print_grid",
@@ -9,6 +10,7 @@ __all__ = [
 
 import os
 import sys
+import time
 from itertools import chain
 
 import requests as requests
@@ -50,3 +52,10 @@ def pipe(first, *args):
     for func in args:
         first = func(first)
     return first
+
+
+def benchmark(part):
+    start_time = time.time()
+    ans = part()
+    end_time = time.time()
+    print(ans, "in", end_time - start_time, "seconds")

@@ -5,7 +5,7 @@ from collections import defaultdict
 
 test = """"""
 
-lines = get_day(TODO, test).split("\n")
+lines = get_day(14, test).split("\n")
 
 
 def part1():
