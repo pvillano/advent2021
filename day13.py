@@ -25,25 +25,25 @@ fold along y=7
 fold along x=5"""
 # 7 means after 7
 coords, folds = get_day(13, test).split("\n\n")
-coords = [tuple(map(int, x.split(','))) for x in coords.split('\n')]
+coords = [tuple(map(int, x.split(","))) for x in coords.split("\n")]
 folds = folds.split("\n")
 # debug_print(coords, folds)
 
 
 def p1():
-    mycoords =list(coords)
+    mycoords = list(coords)
     for fold in folds:
-        axis, coord = fold.split('=')
+        axis, coord = fold.split("=")
         axis = axis[-1]
         coord = int(coord)
-        if axis == 'y':
+        if axis == "y":
             yval = int(coord)
             newcoords = []
             for x, y in mycoords:
                 if y >= yval:
                     y = yval - (y - yval)
                 newcoords.append((x, y))
-        elif axis == 'x':
+        elif axis == "x":
             xval = int(coord)
             newcoords = []
             for x, y in mycoords:
@@ -56,8 +56,10 @@ def p1():
     debug_print((sorted(set(mycoords))))
     return set(mycoords)
 
+
 def part1():
     return len(p1())
+
 
 def part2():
     mycoords = p1()
@@ -65,10 +67,10 @@ def part2():
     height = max(x[1] for x in mycoords) + 1
     for i in range(height):
         for j in range(width):
-            if (j,i) in mycoords:
-                print("[#]", end='')
+            if (j, i) in mycoords:
+                print("[#]", end="")
             else:
-                print(" . ", end='')
+                print(" . ", end="")
         print()
 
 
