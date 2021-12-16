@@ -1,17 +1,10 @@
+from collections import Counter
 from copy import copy
-
-from utils import benchmark, debug_print, get_day, pipe
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
 from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    permutations,
-    combinations,
     pairwise,
 )
-from collections import defaultdict, deque, Counter
+
+from utils import benchmark, debug_print, get_day
 
 test = """NNCB
 
@@ -58,7 +51,7 @@ def part1():
 def part2():
     pairs = Counter(["".join(ab) for ab in pairwise(template)])
     for i in range(40):
-        newpairs = defaultdict(int)
+        newpairs = Counter()
         for pair, num in pairs.items():
             if pair in rules:
                 a, b, c = pair[0], rules[pair], pair[1]
