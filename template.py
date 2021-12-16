@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 
 from utils import benchmark, debug_print, get_day, pipe
 from math import sqrt, floor, ceil, gcd, sin, cos, atan2
@@ -15,7 +15,7 @@ from collections import defaultdict, deque, Counter
 
 test = """"""
 
-lines = get_day(14, test).split("\n")
+lines = get_day(DAYNUMBER, test).split("\n")
 
 
 def part1():
