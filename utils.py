@@ -25,8 +25,8 @@ def debug_print(*args, **kwargs):
         return print(*args, **kwargs, file=sys.stderr, flush=True)
 
 
-def get_day(day: int, practice: str = "", year: int = 2021) -> str:
-    if DEBUG:
+def get_day(day: int, practice: str = "", *, year: int = 2021, override=False) -> str:
+    if DEBUG and not override:
         return practice.strip()
     filename = f"input{day:02d}.txt"
     if not os.path.exists(filename):
