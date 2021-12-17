@@ -1,5 +1,5 @@
 from math import log, exp
-from time import time
+from time import time, sleep
 from typing import Sized, Iterable
 
 __all__ = ["otqdm"]
@@ -123,6 +123,10 @@ if __name__ == "__main__":
         if i < 2:
             return 1
         return fibonacci(i - 1) + fibonacci(i - 2)
+
+    print(">>>for i in otdqm(range(40)):\n" "...    sleep(i/100)")
+    for i in otqdm(range(40)):
+        sleep(i / 100)
 
     print(">>>for i in otdqm(range(40)):\n" "...    fibonacci(i)")
     for i in otqdm(range(40)):
