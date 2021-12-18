@@ -1,7 +1,6 @@
+from collections import defaultdict, deque, Counter
 from copy import copy, deepcopy
-
-from utils import benchmark, debug_print, get_day, pipe
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
+from functools import cache, lru_cache, partial, reduce
 from itertools import (
     accumulate,
     count,
@@ -11,7 +10,9 @@ from itertools import (
     combinations,
     pairwise,
 )
-from collections import defaultdict, deque, Counter
+from math import sqrt, floor, ceil, gcd, sin, cos, atan2
+
+from utils import benchmark, debug_print, get_day, pipe
 
 test = """"""
 
