@@ -1,18 +1,4 @@
-from collections import defaultdict, deque, Counter
-from copy import copy, deepcopy
-from functools import cache, lru_cache, partial, reduce
-from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    permutations,
-    combinations,
-    pairwise,
-)
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
-
-from utils import benchmark, debug_print, get_day, pipe
+from utils import benchmark, debug_print, get_day
 
 test = """[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
 [[[5,[2,8]],4],[5,[[9,9],0]]]
@@ -29,7 +15,9 @@ lines = get_day(18, test).split("\n")
 
 
 class Node:
-    def __init__(self, left: "Node" or int, right: "Node" or int, parent: "Node" or None = None):
+    def __init__(
+        self, left: "Node" or int, right: "Node" or int, parent: "Node" or None = None
+    ):
         self.left = left
         self.right = right
         self.parent = parent
@@ -44,7 +32,7 @@ def explode(n: Node):
     p = n
     while p.parent is not None and p.parent.left == p:
         p = p.parent
-    if p.parent is None:  # there is not lefter node
+    if p.parent is None:  # there is not left-er node
         pass
     else:
         if isinstance(p.parent.left, int):
@@ -146,13 +134,13 @@ def simplify(node: Node):
         fn = first_nested(node)
         if fn is not None:
             explode(fn)
-            debug_print("after explode:      ", node)
+            debug_print("after explode: ", node)
             continue
         if not found_first_split(node):
             # no node to explode or split
             done = True
         else:
-            debug_print("after split:        ", node)
+            debug_print("after split:   ", node)
     return node
     # dfs for explode, split
 
@@ -168,12 +156,11 @@ def part1():
         parent = Node(runtot, num, None)
         num.parent = parent
         runtot.parent = parent
-        debug_print("after addition:     ", parent)
+        debug_print("after addition:", parent)
         simplify(parent)
-        debug_print("after simplification:", parent)
+        debug_print("simplified:    ", runtot)
         runtot = parent
 
-    debug_print(runtot)
     return magnitude(runtot)
 
 
@@ -196,4 +183,4 @@ def part2():
 
 
 benchmark(part1)
-benchmark(part2)
+# benchmark(part2)
