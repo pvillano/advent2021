@@ -1,19 +1,8 @@
 import random
-from collections import defaultdict, deque, Counter
-from copy import copy, deepcopy
-from functools import cache, lru_cache, partial, reduce
-from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    permutations,
-    combinations,
-    pairwise,
-)
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2, pi
+from copy import deepcopy
+from itertools import product
 
-from utils import benchmark, debug_print, get_day, pipe
+from utils import benchmark, debug_print, get_day
 
 test = """--- scanner 0 ---
 404,-588,-901
@@ -162,21 +151,22 @@ for chunk in chunks:
     data.append(tmp)
 
 
-def rotate(xyz, i):
+def rotate(xyz: tuple[int, int, int], i: int):
     x, y, z = xyz
-    rot, transp = divmod(i, 6)
+    # 4 90deg rotations, 6 faces
+    rot, face = divmod(i, 6)
 
-    if transp == 0:
+    if face == 0:
         x, y, z = x, y, z
-    elif transp == 1:
+    elif face == 1:
         x, y, z = y, z, x
-    elif transp == 2:
+    elif face == 2:
         x, y, z = z, x, y
-    elif transp == 3:
+    elif face == 3:
         x, y, z = -x, -z, -y
-    elif transp == 4:
+    elif face == 4:
         x, y, z = -y, -x, -z
-    elif transp == 5:
+    elif face == 5:
         x, y, z = -z, -y, -x
     else:
         raise Exception()
@@ -214,6 +204,20 @@ def transpose_list(l, v):
 
 
 def part1():
+    """
+    we pick an origin scanner, call that the base group
+    pick a random scanner candidate from the remaining scanners
+        pick a random rotation and rotate the entire candidate
+        rotation is expensive, so try the following several times
+            pick a point in the base group
+            pick a point in the scanner
+            translate every point in the scanner so those two points overlap
+            count the number of overlaps
+            if the number of overlaps is greater than 12
+                add the TRANSPOSED points to base group
+                record the rotation and offset
+
+    """
     other_scanners: list
     origin_scanner, *other_scanners = deepcopy(data)
     base_group = set(origin_scanner)
@@ -228,7 +232,7 @@ def part1():
         for _ in range(20):
             v0 = random.choice(candidate)
             v1 = random.choice(tbg)
-            # vector FROM
+            # vector FROM candidate TO base group
             v = difference(v1, v0)
             candidate2 = transpose_list(candidate, v)
             overlap_count = len(base_group.intersection(candidate2))
@@ -239,20 +243,6 @@ def part1():
                 debug_print(f"remaining={len(other_scanners)}")
                 break
     return len(base_group)
-
-    """
-    we pick an origin scanner, call that the base group
-    for each remaining scanner
-        for each possible rotation of the scanner
-            pick a point in the base group
-            pick a point in the scanner
-            translate every point in the scanner so those two points overlap
-            count the number of overlaps
-            if the number of overlaps is greater than 12
-                add the TRANSPOSED points to base group
-                record the rotation and offset
-        
-    """
 
 
 def manhat(v1, v2):
@@ -274,7 +264,6 @@ def part2():
         for _ in range(20):
             v0 = random.choice(candidate)
             v1 = random.choice(tbg)
-            # vector FROM
             v = difference(v1, v0)
             candidate2 = transpose_list(candidate, v)
             overlap_count = len(base_group.intersection(candidate2))
@@ -289,5 +278,5 @@ def part2():
     return max(manhat(v1, v2) for v1, v2 in product(v_list, v_list))
 
 
-# benchmark(part1)
+benchmark(part1)
 benchmark(part2)
