@@ -29,23 +29,19 @@ def part1():
     return min(it())[0]
 
 
+def triangle(k):
+    # 0,1,3,6,10
+    k = abs(k)
+    return (k * (k + 1)) // 2
+
+
+def cost(data, x):
+    return sum(triangle(k - x) for k in data)
+
+
 def part2():
-    # rip quadratic
-
-    # minimizing y=axx + bx + c
-    # cost(x,pos) = (x-pos)*(x-pos+1)/2
-    # = 1/2 * ( xx + (-2pos + 1)x +pos(pos-1)
-    # min at der = 0
-    # -b/2a
-
     data = pipe(map(int, line.split(",")), sorted, tuple)
-    a = len(data) / 2
-    b = sum([-2 * pos - 1 for pos in data]) / 2
-    c = sum([pos * (pos - 1) for pos in data]) / 2
-    debug_print(a, b, c)
-    x = -b / 2 / a
-    cost = a * x * x + b * x + c
-    return x, cost
+    return min(cost(data, x) for x in range(min(data), max(data)))
 
 
 print(part1())
