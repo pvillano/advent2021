@@ -31,9 +31,9 @@ def part1():
 
 
 sev_to_int = {
-    'abcefg': 0,
-    'cf': 1,
-    'acdeg': 2,
+    "abcefg": 0,
+    "cf": 1,
+    "acdeg": 2,
     "acdfg": 3,
     "bcdf": 4,
     "abdfg": 5,
@@ -52,7 +52,12 @@ def part2():
         # number lengths 62554 56376
         # in order       23455 56667
         #                174       8
-        one, seven, four, eight = sorted_in[0], sorted_in[1], sorted_in[2], sorted_in[-1]
+        one, seven, four, eight = (
+            sorted_in[0],
+            sorted_in[1],
+            sorted_in[2],
+            sorted_in[-1],
+        )
         rest = sorted_in[3:-1]
         a = seven - one
         bd = four - one
@@ -69,18 +74,18 @@ def part2():
         g = adg & eg
         e = eg - g
         f = abfg - adg - b
-        c = set('abcdefg') - abfg - adg - e
+        c = set("abcdefg") - abfg - adg - e
 
         # a = what wire is set to display an 'a'
 
         decoder = {
-            a.pop(): 'a',
-            b.pop(): 'b',
-            c.pop(): 'c',
-            d.pop(): 'd',
-            e.pop(): 'e',
-            f.pop(): 'f',
-            g.pop(): 'g',
+            a.pop(): "a",
+            b.pop(): "b",
+            c.pop(): "c",
+            d.pop(): "d",
+            e.pop(): "e",
+            f.pop(): "f",
+            g.pop(): "g",
         }
         num = 0
         for encoded in output_list:
