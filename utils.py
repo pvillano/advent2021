@@ -8,10 +8,12 @@ __all__ = [
     "pipe",
 ]
 
+import inspect
 import os
 import sys
 import time
 from itertools import chain
+from typing import Any
 
 import requests as requests
 
@@ -48,6 +50,30 @@ def debug_print_grid(grid):
         print()
 
 
+BASE_INDENT = len(inspect.stack()) + 1
+
+
+def debug_print_recursive(*args, **kwargs):
+    if DEBUG:
+        indent = len(inspect.stack())
+        return print("| " * indent, *args, **kwargs, file=sys.stderr, flush=True)
+
+
+def debug_print_sparse_grid(grid_map: dict[(int, int), Any], override=False):
+    if not (DEBUG or override):
+        return
+    x0, x1 = min(k[0] for k in grid_map.keys()), max(k[0] for k in grid_map.keys())
+    y0, y1 = min(k[1] for k in grid_map.keys()), max(k[1] for k in grid_map.keys())
+    max_w = max(len(str(v)) for v in grid_map.values())
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            if (x, y) in grid_map:
+                print(str(grid_map[(x, y)]).rjust(max_w + 1), end="")
+            else:
+                print(" " * max_w, end=" ")
+        print()
+
+
 def pipe(first, *args):
     for func in args:
         first = func(first)
@@ -59,3 +85,15 @@ def benchmark(part):
     ans = part()
     end_time = time.time()
     print(ans, "in", end_time - start_time, "seconds")
+
+
+if __name__ == '__main__':
+    def fib(i):
+        debug_print_recursive(f"fib({i})")
+        if i < 2:
+            ret = 1
+        else:
+            ret = fib(i - 1) + fib(i - 2)
+        return ret
+
+    fib(6)
