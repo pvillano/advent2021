@@ -5,7 +5,7 @@ from utils import benchmark, debug_print, get_day, debug_print_recursive
 
 test = """9C0141080250320F1802104A08"""
 
-line = get_day(16, test)
+line = get_day(16, test, override=True)
 data_long = int(line, 16)
 data_str = format(data_long, "b").rjust(len(line) * 4, "0")
 data: tuple[int] = tuple(int(x) for x in data_str)
@@ -100,6 +100,15 @@ function_map = {
     6: lt,
     7: eq,
 }
+op_char_map = {
+    0: " + ",
+    1: " * ",
+    2: ", ",
+    3: ", ",
+    5: " > ",
+    6: " < ",
+    7: " == ",
+}
 
 
 def pluck_a_packet2(remaining):
@@ -110,7 +119,7 @@ def pluck_a_packet2(remaining):
     if type_id == 4:
         num, remaining = decode_num(remaining)
         debug_print_recursive("after", "".join(map(str, remaining)))
-        return num, remaining
+        return str(num), remaining
     # else
     length_type_id, *remaining = remaining
     sub_packets = []
@@ -131,7 +140,15 @@ def pluck_a_packet2(remaining):
             sub_packets.append(packet)
     op = function_map[type_id]
     debug_print_recursive("after", "".join(map(str, remaining)))
-    return op(sub_packets), remaining
+
+    op_char = op_char_map[type_id]
+    if type_id == 2:
+        ret = f"min([{op_char.join(sub_packets)}])"
+    elif type_id == 3:
+        ret = f"max([{op_char.join(sub_packets)}])"
+    else:
+        ret = f"({op_char.join(sub_packets)})"
+    return ret, remaining
 
 
 def part2():
@@ -140,4 +157,6 @@ def part2():
 
 if __name__ == "__main__":
     # benchmark(part1)
-    benchmark(part2)
+    # benchmark(part2)
+    p2 = part2()
+    print(f"{p2} = {eval(p2)}")
