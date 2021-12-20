@@ -59,19 +59,37 @@ def debug_print_recursive(*args, **kwargs):
         return print("| " * indent, *args, **kwargs, file=sys.stderr, flush=True)
 
 
-def debug_print_sparse_grid(grid_map: dict[(int, int), Any], override=False):
+def debug_print_sparse_grid(
+    grid_map: dict[(int, int), Any] or set, *, transpose=False, override=False
+):
     if not (DEBUG or override):
         return
+    if isinstance(grid_map, set):
+        grid_map = {k: "# " for k in grid_map}
     x0, x1 = min(k[0] for k in grid_map.keys()), max(k[0] for k in grid_map.keys())
     y0, y1 = min(k[1] for k in grid_map.keys()), max(k[1] for k in grid_map.keys())
     max_w = max(len(str(v)) for v in grid_map.values())
-    for y in range(y0, y1 + 1):
+    if not transpose:
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                if (x, y) in grid_map:
+                    print(
+                        str(grid_map[(x, y)]).rjust(max_w + 1), end="", file=sys.stderr
+                    )
+                else:
+                    print(" " * max_w, end=" ", file=sys.stderr)
+            print(file=sys.stderr, flush=True)
+    else:
         for x in range(x0, x1 + 1):
-            if (x, y) in grid_map:
-                print(str(grid_map[(x, y)]).rjust(max_w + 1), end="")
-            else:
-                print(" " * max_w, end=" ")
-        print()
+            for y in range(y0, y1 + 1):
+                if (x, y) in grid_map:
+                    print(
+                        str(grid_map[(x, y)]).rjust(max_w + 1), end="", file=sys.stderr
+                    )
+                else:
+                    print(" " * max_w, end=" ", file=sys.stderr)
+            print(file=sys.stderr, flush=True)
+    print(file=sys.stderr, flush=True)
 
 
 def pipe(first, *args):
@@ -87,7 +105,8 @@ def benchmark(part):
     print(ans, "in", end_time - start_time, "seconds")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     def fib(i):
         debug_print_recursive(f"fib({i})")
         if i < 2:
