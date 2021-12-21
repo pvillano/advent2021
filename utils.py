@@ -3,6 +3,7 @@ __all__ = [
     "DEBUG",
     "debug_print",
     "debug_print_grid",
+    "debug_print_sparse_grid",
     "flatten",
     "get_day",
     "pipe",
@@ -13,7 +14,7 @@ import os
 import sys
 import time
 from itertools import chain
-from typing import Any
+from typing import Any, Callable
 
 import requests as requests
 
@@ -22,9 +23,10 @@ DEBUG = bool(sys.gettrace())
 flatten = chain.from_iterable
 
 
-def debug_print(*args, **kwargs):
-    if DEBUG:
-        return print(*args, **kwargs, file=sys.stderr, flush=True)
+def debug_print(*args, override=False, **kwargs):
+    if not (DEBUG or override):
+        return
+    return print(*args, **kwargs, file=sys.stderr, flush=True)
 
 
 def get_day(day: int, practice: str = "", *, year: int = 2021, override=False) -> str:
@@ -43,20 +45,22 @@ def get_day(day: int, practice: str = "", *, year: int = 2021, override=False) -
         return cache_file.read().strip()
 
 
-def debug_print_grid(grid):
-    if DEBUG:
-        for line in grid:
-            print(*line)
-        print()
+def debug_print_grid(grid, *, override=False):
+    if not (DEBUG or override):
+        return
+    for line in grid:
+        print(*line)
+    print()
 
 
 BASE_INDENT = len(inspect.stack()) + 1
 
 
-def debug_print_recursive(*args, **kwargs):
-    if DEBUG:
-        indent = len(inspect.stack())
-        return print("| " * indent, *args, **kwargs, file=sys.stderr, flush=True)
+def debug_print_recursive(*args, override=False, **kwargs):
+    if not (DEBUG or override):
+        return
+    indent = len(inspect.stack()) - BASE_INDENT
+    return print(" |" * indent, *args, **kwargs, file=sys.stderr, flush=True)
 
 
 def debug_print_sparse_grid(
@@ -92,13 +96,13 @@ def debug_print_sparse_grid(
     print(file=sys.stderr, flush=True)
 
 
-def pipe(first, *args):
+def pipe(first, *args: Callable):
     for func in args:
         first = func(first)
     return first
 
 
-def benchmark(part):
+def benchmark(part: Callable):
     start_time = time.time()
     ans = part()
     end_time = time.time()
@@ -107,8 +111,10 @@ def benchmark(part):
 
 if __name__ == "__main__":
 
+    debug_print_recursive(f"bare", override=True)
+
     def fib(i):
-        debug_print_recursive(f"fib({i})")
+        debug_print_recursive(f"fib({i})", override=True)
         if i < 2:
             ret = 1
         else:
