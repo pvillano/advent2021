@@ -28,13 +28,7 @@ def part1():
 
 
 @cache
-def my_wins(
-    my_turn: bool,
-    playing_pos: int,
-    waiting_pos: int,
-    playing_score: int = 0,
-    waiting_score: int = 0,
-):
+def my_wins(my_turn: bool, playing_pos: int, waiting_pos: int, playing_score: int = 0, waiting_score: int = 0):
     total = 0
     for roll in map(sum, product((1, 2, 3), repeat=3)):
         after_turn_pos = (playing_pos - 1 + roll) % 10 + 1
@@ -43,13 +37,7 @@ def my_wins(
             if my_turn:
                 total += 1
         else:
-            total += my_wins(
-                not my_turn,
-                waiting_pos,
-                after_turn_pos,
-                waiting_score,
-                after_turn_score,
-            )
+            total += my_wins(not my_turn, waiting_pos, after_turn_pos, waiting_score, after_turn_score)
     return total
 
 
