@@ -1,6 +1,5 @@
 from functools import cache
-from itertools import count, product, repeat, cycle
-from typing import Generator
+from itertools import count, product, cycle
 
 from utils import benchmark, get_day
 
