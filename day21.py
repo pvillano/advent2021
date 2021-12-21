@@ -1,19 +1,8 @@
-from collections import defaultdict, deque, Counter
-from copy import copy, deepcopy
-from functools import cache, lru_cache, partial, reduce
-from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    permutations,
-    combinations,
-    pairwise,
-)
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
+from functools import cache
+from itertools import count, product, repeat, cycle
+from typing import Generator
 
-from otqdm import otqdm
-from utils import benchmark, debug_print, get_day, pipe
+from utils import benchmark, get_day
 
 test = """Player 1 starting position: 4
 Player 2 starting position: 8"""
@@ -22,65 +11,53 @@ lines = get_day(21, test).split("\n")
 player1pos, player2pos = [int(x[-1:]) for x in lines]
 
 
-def die():
-    while True:
-        for i in range(1, 101):
-            yield i
-
-
 def part1():
     p1idx = player1pos - 1
     p2idx = player2pos - 1
     p1score = 0
     p2score = 0
-    iter = enumerate(die(), 1)
-    rolls = 0
-    while True:
-        # for i in range(5):
-        (_, r1), (_, r2), (rolls, r3) = next(iter), next(iter), next(iter)
-        p1idx = (p1idx + r1 + r2 + r3) % 10
+    die = cycle(range(1, 101))
+    for rounds in count():
+        p1idx = (p1idx + next(die) + next(die) + next(die)) % 10
         p1score += p1idx + 1
-        # debug_print(f"1: {r1, r2, r3=} {p1idx+1=} {p1score=}")
         if p1score >= 1000:
-            return p2score * rolls
-        (_, r1), (_, r2), (rolls, r3) = next(iter), next(iter), next(iter)
-        p2idx = (p2idx + r1 + r2 + r3) % 10
+            return p2score * (rounds * 6 + 3)
+        p2idx = (p2idx + next(die) + next(die) + next(die)) % 10
         p2score += p2idx + 1
-        # debug_print(f"1: {r1, r2, r3=} {p2idx+1=} {p2score=}")
-        if p2score >= 21:
-            return p1score * rolls
+        if p2score >= 1000:
+            return p1score * (rounds * 6 + 6)
 
 
 @cache
-def p1wins(first, second, first_score, second_score):
-    tot_wins = 0
-    for i, j, k in product(*[[1, 2, 3]] * 3):
-        new_p1pos = (first + i + j + k) % 10
-        new_p1score = first_score + new_p1pos + 1
-        if new_p1score >= 21:
-            tot_wins += 1
+def my_wins(
+    my_turn: bool,
+    playing_pos: int,
+    waiting_pos: int,
+    playing_score: int = 0,
+    waiting_score: int = 0,
+):
+    total = 0
+    for roll in map(sum, product((1, 2, 3), repeat=3)):
+        after_turn_pos = (playing_pos - 1 + roll) % 10 + 1
+        after_turn_score = playing_score + after_turn_pos
+        if after_turn_score >= 21:
+            if my_turn:
+                total += 1
         else:
-            tot_wins += p2wins(second, new_p1pos, second_score, new_p1score)
-    return tot_wins
-
-
-@cache
-def p2wins(first_idx, second_idx, first_score, second_score):
-    tot_wins = 0
-    for i, j, k in product((1, 2, 3), (1, 2, 3), (1, 2, 3)):
-        new_p1pos = (first_idx + i + j + k) % 10
-        new_p1score = first_score + new_p1pos + 1
-        if new_p1score >= 21:
-            tot_wins += 0
-        else:
-            tot_wins += p1wins(second_idx, new_p1pos, second_score, new_p1score)
-    return tot_wins
+            total += my_wins(
+                not my_turn,
+                waiting_pos,
+                after_turn_pos,
+                waiting_score,
+                after_turn_score,
+            )
+    return total
 
 
 def part2():
-    p1idx = player1pos - 1
-    p2idx = player2pos - 1
-    return max(p1wins(p1idx, p2idx, 0, 0), p2wins(p1idx, p2idx, 0, 0))
+    return max(
+        my_wins(True, player1pos, player2pos), my_wins(False, player1pos, player2pos)
+    )
 
 
 benchmark(part1)
