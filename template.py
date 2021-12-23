@@ -12,6 +12,8 @@ from itertools import (
 )
 from math import sqrt, floor, ceil, gcd, sin, cos, atan2
 
+from otqdm import otqdm
+
 from utils import benchmark, debug_print, get_day, pipe
 
 test = """"""
