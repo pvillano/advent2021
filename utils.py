@@ -49,7 +49,7 @@ def debug_print_grid(grid, *, override=False):
     if not (DEBUG or override):
         return
     for line in grid:
-        print(*line)
+        print(*line, file=sys.stderr, flush=True)
     print()
 
 
@@ -106,7 +106,10 @@ def benchmark(part: Callable):
     start_time = time.time()
     ans = part()
     end_time = time.time()
-    print(ans, "in", end_time - start_time, "seconds")
+    if DEBUG:
+        print(ans, "in", end_time - start_time, "seconds", file=sys.stderr)
+    else:
+        print(ans, "in", end_time - start_time, "seconds")
 
 
 if __name__ == "__main__":
