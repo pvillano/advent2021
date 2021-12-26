@@ -11,6 +11,7 @@ from itertools import (
     pairwise,
 )
 from math import sqrt, floor, ceil, gcd, sin, cos, atan2
+from typing import Optional
 
 from otqdm import otqdm
 
@@ -39,12 +40,12 @@ on x=-41..9,y=-7..43,z=-33..15
 on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
 on x=967..23432,y=45373..81175,z=27513..53682"""
 
-lines = get_day(22, test).split("\n")
+lines = tuple(get_day(22, test).split("\n"))
 
 
-def parse_lines(lines=lines):
+def parse_lines(line_list=lines):
     def gen():
-        for line in lines:
+        for line in line_list:
             cmd_s, coords = line.split(' ')
             cmd = cmd_s == "on"
             str_s = coords.split(',')
@@ -74,34 +75,89 @@ def part1() -> int:
     return len(reactor)
 
 
+def cuboid_intersection(a: tuple[tuple[int]], b: tuple[tuple[int]]) -> Optional[tuple[tuple[int]]]:
+    c = tuple((max(a0, b0), min(a1, b1)) for (a0, a1), (b0, b1) in zip(a, b))
+    if any(c0 > c1 for c0, c1 in c):
+        return None
+    return c
+
+
+class Cuboid:
+    # def __init__(self, x0, x1, y0, y1, z0, z1):
+    def __init__(self, line):
+        # self.data = ((x0, x1), (y0, y1), (z0, z1))
+        self.data = line
+
+    def __contains__(self, item):
+        x, y, z = item
+        (x0, x1), (y0, y1), (z0, z1) = self.data
+        return x in range(x0, x1 + 1) and y in range(y0, y1 + 1) and z in range(z0, z1 + 1)
+
+    def __and__(self, other):
+        pass
+
+    def __add__(self, other):
+        return self.__add__(other)
+
+
 def part2() -> int:
     """
-        So here's some thoughts
-        no more naive grid
-        we could fragment cuboids when they intersected
+    a point is on if its count in add minus its count in sub is equals 1
 
-        I like the idea of having doubly linked data structures from one sorting to another
+    to abosorb an on cuboid:
+        add the cuboid to add
+        add the intersections of the cuboid with existing entries in add to sub
+        add the intersections of the cuboid with existing entries in sub to add
+    to absorb an off cuboid:
+        add the intersections of the cuboid with existing entries in add to sub
+        add the intersections of the cuboid with existing entries in sub to add
 
-        The obvious way to do this is to build a list of cuboids
+    suppose a point was counted x times in add and y times in sub
+    after an on operation which includes this point, it would be counted x-y times in add and y-x times in sub
 
-        you could run from left to right,
+    suppose a point was counted x+1 times in add and x times in sub
+    after an on operation which includes this point, it would be counted x-y times in add and y-x times in sub
 
-        there's only 420 inputs (nice)
-        intersection of cubes is really easy
-
-        we just build a list of cubes and a list of negative cubes
-        an intersection creates a negative cube
-        a subtraction creates a negative cube
-
-        off+x=off
-        on+off = 1pos 1neg
-        on+on = 2pos 1neg
-
-        on+pos= on+neg
-        on+neg = pos
-
-        All negatives represent an area of intersection?
+    suppose a point was counted x times in add and y times in sub
+    after an on operation which includes this point, it would be counted x-y times in add and y-x times in sub
     """
+
+    """
+    Set Unions as list additions and subtractions work
+    a u b = a + b - anb
+    a n ^b = a - anb
+    
+    a u b u c = (a + b - anb) u c
+              = a u c + b u c - anb u c
+              = (a + c - anc) + (b + c - bnc) - (anb + c - anbnc)
+              ...
+              = a + b + c - anb - anc - bnc + anbnc
+    """
+
+    """
+    (a - b) u c = a + c - ac - (b + c - bc)
+                = a + c - ac - b - c + bc
+                = a - ac - b + bc
+    """
+
+    """
+    (a - anb) u c = a + c - ac - (anb + c - anbnc)
+                  = a + c - ac - anb - c + anbnc
+                  = a - ac - anb + anbnc
+    """
+
+    """
+    (more stuff on paper)
+    """
+    add_set = []
+    sub_set = []
+    data = parse_lines()
+    for cmd, line in otqdm(data):
+        if cmd:
+            pass
+            # add to add
+            # add all the add intersections to sub
+            #
 
 
 if __name__ == '__main__':
