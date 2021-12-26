@@ -1,49 +1,8 @@
-from collections import defaultdict, deque, Counter
-from copy import copy, deepcopy
-from functools import cache, lru_cache, partial, reduce
-from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    permutations,
-    combinations,
-    pairwise,
-)
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
-from typing import Optional, Tuple
-
 from otqdm import otqdm
 
-from utils import benchmark, debug_print, get_day, pipe
+from utils import benchmark, get_day
 
-test0 = """on x=10..12,y=10..12,z=10..12
-on x=11..13,y=11..13,z=11..13
-off x=9..11,y=9..11,z=9..11
-on x=10..10,y=10..10,z=10..10"""
-test1 = """on x=-20..26,y=-36..17,z=-47..7
-on x=-20..33,y=-21..23,z=-26..28
-on x=-22..28,y=-29..23,z=-38..16
-on x=-46..7,y=-6..46,z=-50..-1
-on x=-49..1,y=-3..46,z=-24..28
-on x=2..47,y=-22..22,z=-23..27
-on x=-27..23,y=-28..26,z=-21..29
-on x=-39..5,y=-6..47,z=-3..44
-on x=-30..21,y=-8..43,z=-13..34
-on x=-22..26,y=-27..20,z=-29..19
-off x=-48..-32,y=26..41,z=-47..-37
-on x=-12..35,y=6..50,z=-50..-2
-off x=-48..-32,y=-32..-16,z=-15..-5
-on x=-18..26,y=-33..15,z=-7..46
-off x=-40..-22,y=-38..-28,z=23..41
-on x=-16..35,y=-41..10,z=-47..6
-off x=-32..-23,y=11..30,z=-14..3
-on x=-49..-5,y=-3..45,z=-29..18
-off x=18..30,y=-20..-8,z=-3..13
-on x=-41..9,y=-7..43,z=-33..15
-on x=-54112..-39298,y=-85059..-49293,z=-27449..7877
-on x=967..23432,y=45373..81175,z=27513..53682"""
-test2 = """on x=-5..47,y=-31..22,z=-19..33
+test = """on x=-5..47,y=-31..22,z=-19..33
 on x=-44..5,y=-27..21,z=-14..35
 on x=-49..-1,y=-11..42,z=-10..38
 on x=-20..34,y=-40..6,z=-44..1
@@ -104,7 +63,6 @@ off x=-70369..-16548,y=22648..78696,z=-1892..86821
 on x=-53470..21291,y=-120233..-33476,z=-44150..38147
 off x=-93533..-4276,y=-16170..68771,z=-104985..-24507"""
 
-test = test2
 Cuboid = tuple[tuple[int, int], tuple[int, int], tuple[int, int]]
 
 lines = tuple(get_day(22, test).split("\n"))
@@ -113,10 +71,12 @@ lines = tuple(get_day(22, test).split("\n"))
 def parse_lines(line_list=lines):
     def gen():
         for line in line_list:
-            cmd_s, coords = line.split(' ')
+            cmd_s, coords = line.split(" ")
             cmd = cmd_s == "on"
-            str_s = coords.split(',')
-            pairs = tuple(tuple(int(a) for a in coord[2:].split('..')) for coord in str_s)
+            str_s = coords.split(",")
+            pairs = tuple(
+                tuple(int(a) for a in coord[2:].split("..")) for coord in str_s
+            )
             yield cmd, pairs
 
     return tuple(gen())
@@ -124,10 +84,10 @@ def parse_lines(line_list=lines):
 
 def part1() -> int:
     """
-        So here's some thoughts
-        lets do a naive sparse grid
-        x0 = max(xx[0], -50)
-        x1 = min(xx[1]+1, 50+1)
+    So here's some thoughts
+    lets do a naive sparse grid
+    x0 = max(xx[0], -50)
+    x1 = min(xx[1]+1, 50+1)
     """
     data = parse_lines()
     reactor: set[tuple[int, int, int]] = set()
@@ -151,7 +111,7 @@ def cuboid_intersection(a: Cuboid, b: Cuboid) -> Cuboid | None:
 
 def cuboid_difference(a: Cuboid, b: Cuboid) -> list[Cuboid]:
     """
-    The idea is to slice off faces of a into separate cubes
+    The idea is to slice off faces of `a` into separate cubes
     """
     ret: list[Cuboid] = []
     for i in range(3):
@@ -179,17 +139,8 @@ def volume(cell: Cuboid):
     return (x1 - x0 + 1) * (y1 - y0 + 1) * (z1 - z0 + 1)
 
 
-def l_volume(l):
+def l_volume(l: list[Cuboid]):
     return sum(volume(cell) for cell in l)
-
-
-def test():
-    for (_, a), (_, b) in combinations(parse_lines(), 2):
-        va, vanb, vb = volume(a), volume(cuboid_intersection(a, b)), volume(b)
-        va_b, vb_a = l_volume(cuboid_difference(a, b)), l_volume(cuboid_difference(b, a))
-        debug_print(f"{va=} {vanb=} {vb=} {va_b=} {vb_a=}")
-        debug_print(f"{va_b=} {va-vanb=}  {vb_a=} {vb-vanb=}")
-        debug_print()
 
 
 def part2() -> int:
@@ -219,15 +170,8 @@ def part2() -> int:
             on_list = new_on_list
 
     return sum(volume(cell) for cell in on_list)
-    # ret = 0
-    # for cell in on_list:
-    #     cell = cuboid_intersection(cell, ((-50, 50),) * 3)
-    #     if cell is not None:
-    #         ret += volume(cell)
-    # return ret
 
 
-if __name__ == '__main__':
-    # test()
+if __name__ == "__main__":
     benchmark(part1)
     benchmark(part2)
