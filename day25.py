@@ -38,10 +38,10 @@ def march(cukes: tuple[str]) -> tuple[str]:
         for j in range(width):
             # looping happens to work with [-1]
             left, me, right = cukes[i][j - 1], cukes[i][j], cukes[i][(j + 1) % width]
-            if left == '>' and me == '.':
-                row.append('>')
-            elif me == '>' and right == '.':
-                row.append('.')
+            if left == ">" and me == ".":
+                row.append(">")
+            elif me == ">" and right == ".":
+                row.append(".")
             else:
                 row.append(me)
         tmp.append(row)
@@ -51,11 +51,11 @@ def march(cukes: tuple[str]) -> tuple[str]:
         row = []
         for j in range(width):
             # looping happens to work with [-1]
-            top, me, bot = tmp[i - 1][j], tmp[i][j], tmp[(i+1) % height][j]
-            if top == 'v' and me == '.':
+            top, me, bot = tmp[i - 1][j], tmp[i][j], tmp[(i + 1) % height][j]
+            if top == "v" and me == ".":
                 row.append("v")
-            elif me == 'v' and bot == '.':
-                row.append('.')
+            elif me == "v" and bot == ".":
+                row.append(".")
             else:
                 row.append(me)
         ret.append("".join(row))
@@ -74,8 +74,6 @@ def part1():
         if past == board:
             break
     return i
-
-
 
 
 def part2():
