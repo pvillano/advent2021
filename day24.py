@@ -80,7 +80,7 @@ def part2():
             for w in range(1, 10):
                 z_out = apply_round(w, z, c0, c1, c2)
                 if z_out == 0:
-                    yield [w]
+                    return [w]
             return
         for w in range(1, 10):
             z_out = apply_round(w, z, c0, c1, c2)
@@ -88,11 +88,9 @@ def part2():
                 continue
             w_chain = first_working_w(z_out, step + 1)
             if w_chain is not None:
-                for w_list in w_chain:
-                    yield [w] + w_list
+                return [w] + w_chain
 
-    for x in first_working_w():
-        return int("".join(str(y) for y in x))
+    return int("".join(str(x) for x in first_working_w()))
 
 
 if __name__ == "__main__":
