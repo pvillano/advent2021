@@ -8,6 +8,7 @@ from itertools import (
     product,
     pairwise,
 )
+from math import ceil
 
 from otqdm import otqdm
 
@@ -43,64 +44,9 @@ def apply_round(w, z, c0, c1, c2):
     assert c2 > 0
     assert z >= 0
     if w == ((z % 26) + c1):
-        return z // c0
+        return z // c0  # always smaller
     else:
         return z // c0 * 26 + w + c2  # never 0
-
-
-def part0():
-    constant_list = tuple(invariants())
-    acceptable_zw = defaultdict(set)
-    acceptable_zw[14] = {(0, None)}
-
-    max_z_in_list = []
-    max_z_in = 0
-    for step in range(14):
-        max_z_in_list.append(max_z_in)
-        c0, c1, c2 = constant_list[step]
-        max_z_in = max_z_in // c0 * 26 + 9 + c2
-
-    max_z_in_list = [999] * 14
-    for step in reversed(range(14)):
-        c0, c1, c2 = constant_list[step]
-        acceptable_output_z = [x[0] for x in acceptable_zw[step + 1]]
-
-        if c1 > 9:
-            # return z // c0 * 26 + w + c2
-            for w in range(1, 10):
-                for output_z in acceptable_output_z:
-                    z_over_c0 = output_z - w - c2
-                    if z_over_c0 < 0:
-                        continue
-                    for in_z in range(c0 * z_over_c0, c0 * (z_over_c0 + 1)):
-                        if in_z > max_z_in_list[step]:
-                            break
-                        acceptable_zw[step].add((in_z, w))
-        else:
-            assert c1 < 0
-            # top branch
-            for w in range(1, 10):
-                z_mod = w - c1
-                if z_mod >= 26:
-                    continue
-                in_z = z_mod
-                while in_z // c0 <= max(acceptable_output_z):
-                    if in_z > max_z_in_list[step]:
-                        break
-                    acceptable_zw[step].add((in_z, w))
-                    in_z += 26
-            # bottom branch
-            for w in range(1, 10):
-                for output_z in acceptable_output_z:
-                    z_over_c0 = output_z - w - c2
-                    if z_over_c0 < 0:
-                        continue
-                    for in_z in range(c0 * z_over_c0, c0 * (z_over_c0 + 1)):
-                        if in_z > max_z_in_list[step]:
-                            break
-                        acceptable_zw[step].add((in_z, w))
-        # debug_print(step, acceptable_zw[step])
-        debug_print(step, len(acceptable_zw[step]))
 
 
 def part1():
@@ -124,5 +70,44 @@ def part1():
     return int("".join([str(x) for x in first_working_w()]))
 
 
+uh_oh = 0
+
+
+def part2():
+    constant_list = tuple(invariants())
+
+    max_z_in = {14: 0}
+
+    for step in reversed(range(14)):
+        c0, c1, c2 = constant_list[step]
+        max_z_in[step] = max_z_in[step + 1] * c0 + c0 - 1
+
+    max_z_out = tuple(max_z_in[x + 1] for x in range(14))
+
+    @cache
+    def first_working_w(z=0, step=0):
+        global uh_oh
+        c0, c1, c2 = constant_list[step]
+        if step == 13:
+            for w in range(1, 10):
+                z_out = apply_round(w, z, c0, c1, c2)
+                if z_out == 0:
+                    yield [w]
+            return
+        for w in range(1, 10):
+            z_out = apply_round(w, z, c0, c1, c2)
+            if z_out > max_z_out[step]:
+                continue
+            w_chain = first_working_w(z_out, step + 1)
+            if w_chain is not None:
+                for w_list in w_chain:
+                    yield [w] + w_list
+
+    for x in first_working_w():
+        return int("".join(str(y) for y in x))
+
+
 if __name__ == '__main__':
     benchmark(part1)
+    benchmark(part2)
+    pass
