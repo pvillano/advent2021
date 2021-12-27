@@ -6,130 +6,110 @@ from itertools import (
     count,
     cycle,
     product,
-    permutations,
-    combinations,
     pairwise,
 )
-from math import sqrt, floor, ceil, gcd, sin, cos, atan2
 
 from otqdm import otqdm
 
 from utils import benchmark, debug_print, get_day, pipe
 
-test = """inp w
-add z w
-mod z 2
-div w 2
-add y w
-mod y 2
-div w 2
-add x w
-mod x 2
-div w 2
-mod w 2"""
+lines = get_day(24, "", override=True).split("\n")
 
-lines = get_day(24, test, override=True).split("\n")
+chunks = [lines[i * 18:i * 18 + 18] for i in range(14)]
 
 
-def part0():
-    registers = {
-        "w": 0,
-        "x": 0,
-        "y": 0,
-        "z": 0,
-    }
-    for line in lines:
-
-        instr, a, *_ = line.split()
-        if instr == "inp":
-            registers[a] = int(input(a))  # lol
-        else:
-            var_s = line.split(" ")[2]
-            if var_s in "wxyz":
-                b = registers[var_s]
-            else:
-                b = int(var_s)
-
-            if instr == "add":
-                registers[a] = registers[a] + b
-            elif instr == "mul":
-                registers[a] = registers[a] * b
-            elif instr == "div":
-                registers[a] = registers[a] // b
-            elif instr == "mod":
-                registers[a] = registers[a] % b
-            elif instr == "eql":
-                registers[a] = int(registers[a] == b)
-            else:
-                assert False
-        debug_print(registers)
+def invariants():
+    for chunk in chunks:
+        assert len(chunk) == 18
+        assert chunk[0:4] == lines[0:4]
+        # line 4 is const0
+        assert chunk[4] in ["div z 1", "div z 26"]
+        # line 5 is const1
+        assert chunk[6:15] == lines[6:15]
+        # line 15 is const2
+        assert chunk[16:18] == lines[16:18]
 
 
-def part1():
-    registers = {
-        "w": deque(["0"]),
-        "x": deque(["0"]),
-        "y": deque(["0"]),
-        "z": deque(["0"]),
-    }
-    inputcount = 0
-    for line in otqdm(lines):
-
-        instr, a, *_ = line.split()
-        if instr == "inp":
-            registers[a] = deque([f"in_list[{inputcount}]"])
-            inputcount += 1
-        else:
-            var_s = line.split(" ")[2]
-            if var_s in "wxyz":
-                b = registers[var_s]
-            else:
-                b = var_s
-
-            new = deque()
-            new.append("(")
-            new.append(registers[a])
-            if instr == "add":
-                new.append(" + ")
-            elif instr == "mul":
-                new.append(" * ")
-            elif instr == "div":
-                new.append(" // ")
-            elif instr == "mod":
-                new.append(" % ")
-            elif instr == "eql":
-                new.append(" == ")
-            else:
-                assert False
-            new.append(b)
-            new.append(")")
-            registers[a] = new
-        # debug_print(registers)
-    with open("out.py", "w") as f:
-        for s in rec_print(registers["z"]):
-            f.write(s)
-
-
-def rec_print(remaining):
-    # for i in count():
-    #     if not remaining:
-    #         break
-    while remaining:
-        cur = remaining.popleft()
-        if cur is remaining:
-            pass
-        if isinstance(cur, str):
-            yield cur
-        elif len(cur) > 0:
-            cur2 = cur.popleft()
-            if len(cur) > 0:
-                remaining.appendleft(cur)
-            remaining.appendleft(cur2)
-
-
-def part2():
-    pass
+def apply_round(w, z, c0, c1, c2):
+    assert c0 in (1, 26)
+    if w == ((z % 26) + c1):
+        return z//c0
+    else:
+        return z//c0 * 26 + w + c2
 
 
 # benchmark(part1)
 # benchmark(part2)
+
+invariants()
+line_by_line = """
+input w
+x = 0
+x = z
+mod x 26
+
+div z 26 or div z 1
+
+add x CONSTANT
+
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+
+add y CONSTANT
+
+mul y x
+add z y
+"""
+
+shortened1 = """
+input w
+x = z mod 26 + CONSTANT
+
+div z 26 or div z 1
+
+x = x != w
+y = 25 * x + 1
+z = z*y
+y = w + CONSTANT
+
+z = z + y * x
+"""
+
+shortened2 = """
+input w
+x = ((z mod 26) + c1) != w
+z2 //= 26 or //= 1
+z3 = z2*(25*x + 1)+(w + c2) * x
+"""
+
+"""
+
+c1 can be negative
+c2 is always positive
+
+for z3 to be zero
+    if z was zero
+        only if x= 0
+            i.e. w=(z mod 26 + c1)
+            i.e. w = c1 NEVER
+    else z is positive
+        pass
+    if x = 0 i.e. w=(z mod 26 + c1)
+        only if z2=0
+            if z = 0
+            OR
+            if c0=26 and z<26
+    else x = 1 i.e. w!=(z mod 26 + c1)
+        if 0 = z2*26+w+c2
+        only if z<0
+        
+
+
+"""
