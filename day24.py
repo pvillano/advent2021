@@ -1,25 +1,13 @@
-from collections import defaultdict, deque, Counter
-from copy import copy, deepcopy
-from functools import cache, lru_cache, partial, reduce
-from itertools import (
-    accumulate,
-    count,
-    cycle,
-    product,
-    pairwise,
-)
-from math import ceil
+from functools import cache
 
-from otqdm import otqdm
-
-from utils import benchmark, debug_print, get_day, pipe
+from utils import benchmark, get_day
 
 lines = get_day(24, "", override=True).split("\n")
 
-chunks = [lines[i * 18:i * 18 + 18] for i in range(14)]
+chunks = [lines[i * 18 : i * 18 + 18] for i in range(14)]
 
 
-def invariants():
+def extract_constants():
     for chunk in chunks:
         assert len(chunk) == 18
         assert chunk[0:4] == lines[0:4]
@@ -50,7 +38,7 @@ def apply_round(w, z, c0, c1, c2):
 
 
 def part1():
-    constant_list = tuple(invariants())
+    constant_list = tuple(extract_constants())
 
     @cache
     def first_working_w(z=0, step=0):
@@ -74,7 +62,7 @@ uh_oh = 0
 
 
 def part2():
-    constant_list = tuple(invariants())
+    constant_list = tuple(extract_constants())
 
     max_z_in = {14: 0}
 
@@ -107,7 +95,7 @@ def part2():
         return int("".join(str(y) for y in x))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     benchmark(part1)
     benchmark(part2)
     pass
